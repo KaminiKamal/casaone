@@ -1,0 +1,1 @@
+console.log("Running frontend on posrt:3006");
