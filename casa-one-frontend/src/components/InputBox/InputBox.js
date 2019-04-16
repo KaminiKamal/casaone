@@ -60,6 +60,7 @@ callBackFunction(e){
                         required={true}
                         type="text"
                         style={{backgroundColor: '#ccc'}}
+                        readOnly={true}
                         value={this.props.value}
                         placeholder={this.props.placeholder}
                         
