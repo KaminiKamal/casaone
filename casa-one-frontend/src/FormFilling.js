@@ -81,11 +81,14 @@ class FormFilling extends Component {
                     this.state.productDetails[parent_index].virtualList[0].entities[4].value = (Number(calculation_of_assets[2].value) * Number(calculation_of_assets[3].value)).toString();
                 }
                 if(index===0){
-                    var item_details = this.state.productDescription[textvalue];
-                    console.log("item_details", item_details)
-                    this.state.productDetails[parent_index].virtualList[0].entities[3].value = item_details.price;
-                    this.state.productDetails[parent_index].virtualList[0].entities[1].value = item_details.name;
+                    // var item_details = this.state.productDescription[textvalue];
+                    // console.log("item_details", item_details)
+                    // this.state.productDetails[parent_index].virtualList[0].entities[3].value = item_details.price;
+                    // this.state.productDetails[parent_index].virtualList[0].entities[1].value = item_details.name;
+                    // this.state.productDetails[parent_index].virtualList[0].entities[4].value = (Number(calculation_of_assets[2].value) * Number(calculation_of_assets[3].value)).toString();
+                
                 }
+                
                 this.setState({productDetails: this.state.productDetails});
                 console.log(this.state.productDetails)
                 return;
@@ -150,7 +153,7 @@ class FormFilling extends Component {
                         },
                         {
                             placeholder: "Unit Price",
-                            type: "number",
+                            type: "text",
                             className: "product-unit-price",
                             value: ""
                         },
@@ -297,6 +300,7 @@ class FormFilling extends Component {
                                                                                 )
                                                                             }
                                                                             if(e_element.type==="text" || e_element.type==="number"){
+                                                                                console.log("text--->", e_element.value)
                                                                                 return(
                                                                                     <div style={{display: 'flex'}} className="table-elements">
                                                                                         <InputBox 
@@ -406,6 +410,7 @@ class FormFilling extends Component {
                                                                                 )
                                                                             }
                                                                             if(e_element.type==="text" || e_element.type==="number"){
+                                                                                console.log("text-->", e_element.value)
                                                                                 return(
                                                                                     <InputBox 
                                                                                         // className={e_element.className}

@@ -50,6 +50,7 @@ callBackFunction(e){
 //checkProperty(textvalue, index, type, sub_type){//value, index of the lowest level, type, searchPojo
     
     render(){
+        console.log("textValue", this.state.textValue)
         return(
             
             (
