@@ -154,19 +154,19 @@ class FormFilling extends Component {
                                     placeholder: "QTY",
                                     type: "number",
                                     className: "product-qty",
-                                    value: null
+                                    value: 0
                                 },
                                 {
                                     placeholder: "Unit Price",
-                                    type: "number",
+                                    type: "text",
                                     className: "product-unit-price",
-                                    value: null
+                                    value: 0
                                 },
                                 {
                                     placeholder: "Total Price",
-                                    type: "text",
+                                    type: "disabled-text",
                                     className: "product-total-price",
-                                    value: null
+                                    value: "0"
                                 },
                                 {
                                     placeholder: "Notes",
@@ -180,42 +180,6 @@ class FormFilling extends Component {
                         
                     ]
                 }
-                // {
-                //     title_pojo: "productDetails",
-                //     index: [
-                //         {
-                //             placeholder: "Product ID",
-                //             type: "text",
-                //             className: "product-id",
-                //             value: null
-                //         },
-                //         {
-                //             placeholder: "Product Name",
-                //             type: "text",
-                //             className: "product-id",
-                //             value: null
-                //         },
-                //         {
-                //             placeholder: "QTY",
-                //             type: "number",
-                //             className: "product-id",
-                //             value: null
-                //         },
-                //         {
-                //             placeholder: "Unit Price",
-                //             type: "number",
-                //             className: "product-id",
-                //             value: null
-                //         },
-                //         {
-                //             placeholder: "Total Price",
-                //             type: "text",
-                //             className: "product-id",
-                //             value: null
-                //         },
-                        
-                //     ]
-                // },
             ]
         }
     }
@@ -225,15 +189,24 @@ class FormFilling extends Component {
     SaveProductDetails(){
         console.log("Product Details", this.state)
     }
-    checkProperty(textvalue, index, type, sub_type){//value, index of the lowest level, type, searchPojo
+    checkProperty(textvalue, index, type, sub_type, parent_index){//value, index of the lowest level, type, searchPojo
         switch(type){
             case "PRODUCT_DETAILS": 
                 var _index = _.findIndex(this.state.productDetails, (el, ind) => el.title_pojo===type);
-                var __index = _.findIndex(this.state.productDetails[_index].virtualList, (el, ind) => (el.searchPojo===sub_type));
-                this.state.productDetails[_index].virtualList[__index].entities[index].value = textvalue;
-                //_.findIndex(users, function(o) { return o.user == 'barney'; });
+                var __index = parent_index;
+                //var __index = _.findIndex(this.state.productDetails[_index].virtualList, (el, ind) => (el.searchPojo===sub_type));
+                //console.log("111", __index, textvalue, index, type, sub_type, parent_index)
+                
+                this.state.productDetails[parent_index].virtualList[0].entities[index].value = textvalue;
+                let calculation_of_assets = this.state.productDetails[parent_index].virtualList[0].entities;
+                
+                if(calculation_of_assets[2].value && calculation_of_assets[3].value){
+                    this.state.productDetails[parent_index].virtualList[0].entities[4].value = (Number(calculation_of_assets[2].value) * Number(calculation_of_assets[3].value)).toString();
+                }
+                //_.findIndex(users, function(o) { return o.user == 'barney'; });//2,3,4
+                //console.log("111", calculation_of_assets)
                 this.setState({productDetails: this.state.productDetails})
-                console.log("productDetails::", this.state.productDetails)
+                //console.log("productDetails::", this.state.productDetails)
                 return;
                 
 
@@ -258,8 +231,16 @@ class FormFilling extends Component {
                 
         }
     }
-    clickToDelete(){
-
+    clickToDelete(_index, e){
+        e.preventDefault();
+        if(_index===0 && this.state.productDetails.length===1){
+            alert('Atleast one product is required');
+            return;
+        }
+        console.log("click to delete", e, _index);
+        
+        this.state.productDetails.splice(_index, 1);
+        this.setState({productDetails: this.state.productDetails})
     }
     clickToAdd(data){
         let newProduct = {
@@ -287,19 +268,19 @@ class FormFilling extends Component {
                             placeholder: "QTY",
                             type: "number",
                             className: "product-qty",
-                            value: null
+                            value: 0
                         },
                         {
                             placeholder: "Unit Price",
                             type: "number",
                             className: "product-unit-price",
-                            value: null
+                            value: 0
                         },
                         {
                             placeholder: "Total Price",
-                            type: "text",
+                            type: "disabled-text",
                             className: "product-total-price",
-                            value: null
+                            value: 0
                         },
                         {
                             placeholder: "Notes",
@@ -334,14 +315,15 @@ class FormFilling extends Component {
                                             {
                                                 _.map(_el.virtualObjects, (e_child, e_index) => {
                                                     return(
-                                                        <div key={e_index+`inner_box`}>
-                                                            {
-                                                                _.map(e_child.entities, (e_element, e_index) => {
+                                                        // <div key={e_index+`inner_box`}>
+                                                            
+                                                                _.map(e_child.entities, (e_element, _e_index) => {
                                                                     return(
                                                                         <InputBox 
                                                                             className={e_child.className}
-                                                                            key={e_index}
-                                                                            index={e_index}
+                                                                            key={_e_index}
+                                                                            parent_index={e_index}
+                                                                            index={_e_index}
                                                                             type={e_child.type}
                                                                             searchPojo={e_child.searchPojo}
                                                                             checkProperty={this.checkProperty.bind(this)}
@@ -350,8 +332,8 @@ class FormFilling extends Component {
                                                                         />
                                                                     )
                                                                 })
-                                                            }
-                                                        </div>
+                                                            
+                                                        // </div>
                                                     )
                                                 })
                                             }
@@ -393,33 +375,55 @@ class FormFilling extends Component {
                                                         {
                                                             _.map(_el.virtualList, (e_child, e_index) => {
                                                                 return( 
-                                                                    _.map(e_child.entities, (e_element, e_index) => {
+                                                                    _.map(e_child.entities, (e_element, _e_index) => {
                                                                         if(e_element.type==="textarea"){
                                                                             return(
                                                                                 <TextArea 
                                                                                     className={e_element.className}
-                                                                                    key={e_index}
-                                                                                    index={e_index}
+                                                                                    parent_index={e_index}
+                                                                                    key={_e_index}
+                                                                                    index={_e_index}
                                                                                     type={e_element.type}
                                                                                     searchPojo={e_child.searchPojo}
                                                                                     checkProperty={this.checkProperty.bind(this)}
                                                                                     placeholder={e_element.name}
-                                                                                    titlePojo={e_element.title_pojo}
+                                                                                    titlePojo={_el.title_pojo}
                                                                                 />
                                                                             )
                                                                         }
-                                                                        if(e_element.type!=="textarea"){
+                                                                        if(e_element.type==="text" || e_element.type==="number"){
                                                                             return(
                                                                                 <div style={{display: 'flex'}} className="table-elements">
                                                                                     <InputBox 
                                                                                         className={e_element.className}
-                                                                                        key={e_index}
-                                                                                        index={e_index}
+                                                                                        parent_index={e_index}
+                                                                                        key={_e_index}
+                                                                                        index={_e_index}
                                                                                         type={e_element.type}
                                                                                         searchPojo={e_child.searchPojo}
                                                                                         checkProperty={this.checkProperty.bind(this)}
                                                                                         placeholder={e_element.name}
-                                                                                        titlePojo={e_element.title_pojo}
+                                                                                        titlePojo={_el.title_pojo}
+                                                                                    />
+                                                                                    
+                                                                                </div>
+                                                                                
+                                                                            )
+                                                                        }
+                                                                        if(e_element.type==="disabled-text"){
+                                                                            return(
+                                                                                <div style={{display: 'flex'}} className="table-elements">
+                                                                                    <InputBox 
+                                                                                        className={e_element.className}
+                                                                                        parent_index={e_index}
+                                                                                        key={_e_index}
+                                                                                        index={_e_index}
+                                                                                        type={e_element.type}
+                                                                                        searchPojo={e_child.searchPojo}
+                                                                                        checkProperty={this.checkProperty.bind(this)}
+                                                                                        placeholder={e_element.name}
+                                                                                        titlePojo={_el.title_pojo}
+                                                                                        value={e_element.value}
                                                                                     />
                                                                                     
                                                                                 </div>
@@ -436,8 +440,9 @@ class FormFilling extends Component {
                                                         <div className="btn-float-rgt">
                                                             <Button 
                                                                 className="danger"
+                                                                index={_index}
                                                                 type="button"
-                                                                functionToCall={this.clickToDelete.bind(this)}
+                                                                functionToCall={this.clickToDelete.bind(this, _index)}
                                                                 placeholder="Delete"
                                                                 showButton={true}
                                                             />
@@ -473,29 +478,51 @@ class FormFilling extends Component {
                                                         return(
                                                             <div key={e_index+`inner_box_responsive`}>
                                                                 {
-                                                                    _.map(e_child.entities, (e_element, e_index) => {
+                                                                    _.map(e_child.entities, (e_element, _e_index) => {
                                                                         
-                                                                        if(e_element.type!=="textarea"){
+                                                                        if(e_element.type==="text" || e_element.type==="number"){
                                                                             return(
                                                                                 <InputBox 
                                                                                     // className={e_element.className}
-                                                                                    key={e_index}
-                                                                                    index={e_index}
+                                                                                    parent_index={_index}
+                                                                                    key={_e_index}
+                                                                                    index={_e_index}
                                                                                     type={e_element.type}
                                                                                     searchPojo={e_child.searchPojo}
                                                                                     checkProperty={this.checkProperty.bind(this)}
                                                                                     placeholder={e_element.placeholder}
-                                                                                    titlePojo={e_element.title_pojo}
+                                                                                    titlePojo={_el.title_pojo}
+                                                                                    
                                                                                 />
                                                                             )
                                                                         }
-                                                                        
+
+                                                                        if(e_element.type==="disabled-text"){
+                                                                            return(
+                                                                                <div style={{display: 'flex'}} className="table-elements">
+                                                                                    <InputBox 
+                                                                                        parent_index={_index}
+                                                                                        key={_e_index}
+                                                                                        index={_e_index}
+                                                                                        value={e_element.value}
+                                                                                        type={e_element.type}
+                                                                                        searchPojo={e_child.searchPojo}
+                                                                                        checkProperty={this.checkProperty.bind(this)}
+                                                                                        placeholder={e_element.name}
+                                                                                        titlePojo={_el.title_pojo}
+                                                                                    />
+                                                                                    
+                                                                                </div>
+                                                                                
+                                                                            )
+                                                                        }
                                                                         if(e_element.type==="textarea"){
                                                                             return(
                                                                                 <TextArea 
                                                                                     className={e_element.className}
-                                                                                    key={e_index}
-                                                                                    index={e_index}
+                                                                                    key={_e_index}
+                                                                                    index={_index}
+                                                                                    parent_index={e_index}
                                                                                     type={e_element.type}
                                                                                     searchPojo={e_child.searchPojo}
                                                                                     checkProperty={this.checkProperty.bind(this)}
@@ -514,8 +541,9 @@ class FormFilling extends Component {
                                                 <div style={{marginTop: '2em'}}>
                                                     <Button 
                                                         className="danger"
+                                                        index={_index}
                                                         type="button"
-                                                        functionToCall={this.clickToDelete.bind(this)}
+                                                        functionToCall={this.clickToDelete.bind(this, _index)}
                                                         placeholder="Delete"
                                                         showButton={true}
                                                     />
@@ -541,18 +569,20 @@ class FormFilling extends Component {
                     type="button"
                     functionToCall={this.clickToAdd.bind(this)}
                     placeholder="Add Product"
+                    index={null}
                     showButton={true}
                 />
                     
                 
                 
-                <div className="btn-float-rgt" style={{marginTop:'2.5em'}}>
+                <div className="btn-float-rgt" style={isMobile() ? {marginTop:'0', float: 'left'} : {marginTop:'2.5em'}}>
                     <Button 
                         className="submit"
-                        type="button"
+                        type="submit"
                         functionToCall={this.SaveProductDetails.bind(this)}
                         placeholder="Save"
                         showButton={true}
+                        index={null}
                     />
                 </div>
             </div>
