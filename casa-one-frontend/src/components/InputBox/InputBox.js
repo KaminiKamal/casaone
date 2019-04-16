@@ -5,7 +5,7 @@ class InputBox extends Component{
     constructor(props){
         super(props);
         this.state = {
-            textValue: null,
+            textValue: this.props.value,
             markRequired: (<label style={{position:"relative", top: (this.props.titlePojo==="PRODUCT_DETAILS" ? "-61px" : (isMobile() ? "-56px" : "-10px")), color: "#E22322", fontSize: "12px"}}>*</label>),
             style:{
                 
@@ -34,13 +34,16 @@ class InputBox extends Component{
                 return;
         }
     }
-
-callBackFunction(){
-    if(!this.state.textValue || this.state.textValue===""){//-56, -10
-       // alert('Mandatory field')
-       this.setState({markRequired: (<label style={{position:"relative", top:(this.props.titlePojo==="PRODUCT_DETAILS" ? "-61px" : (isMobile() ? "-56px" : "-10px")), color: "#E22322", fontSize: "12px"}}>*mandatory</label>)})
-       return;
-    }
+handleChange(e){
+    this.setState({textValue: e.target.value})
+}
+callBackFunction(e){
+    //this.setState({textValue: e.target.value});
+    // if(!e.target.value || e.target.value===""){//-56, -10
+    //    // alert('Mandatory field')
+    //    this.setState({markRequired: (<label style={{position:"relative", top:(this.props.titlePojo==="PRODUCT_DETAILS" ? "-61px" : (isMobile() ? "-56px" : "-10px")), color: "#E22322", fontSize: "12px"}}>*mandatory</label>)})
+    //    return;
+    // }
     this.setState({markRequired: (<label style={{position:"relative", top: (this.props.titlePojo==="PRODUCT_DETAILS" ? "-61px" : (isMobile() ? "-56px" : "-10px")), color: "#E22322", fontSize: "12px"}}>*</label>)});
     this.props.checkProperty(this.state.textValue, this.props.index, this.props.titlePojo, this.props.searchPojo, this.props.parent_index)
 }
@@ -59,6 +62,7 @@ callBackFunction(){
                         style={{backgroundColor: '#ccc'}}
                         value={this.props.value}
                         placeholder={this.props.placeholder}
+                        
                     />
                     
                 </div>
@@ -80,7 +84,9 @@ callBackFunction(){
                         className={this.props.className} 
                         style={this.state.style}
                         placeholder={this.props.placeholder}
-                        onChange={(e) => this.setState({textValue: e.target.value})} 
+                        value={this.state.textValue}
+                        onChange={this.handleChange.bind(this)} 
+                        //onChange={this.callBackFunction.bind(this)}
                         onBlur={this.callBackFunction.bind(this)} 
                     />
                     {this.state.markRequired}

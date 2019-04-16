@@ -10,7 +10,7 @@ class TextArea extends Component{
     }
 
 callBackFunction(){
-    this.props.checkProperty(this.state.textValue, this.props.index, this.props.titlePojo, this.props.searchPojo)
+    this.props.checkProperty(this.state.textValue, this.props.index, this.props.titlePojo, this.props.searchPojo, this.props.parent_index)
 }
 //checkProperty(textvalue, index, type, sub_type){//value, index of the lowest level, type, searchPojo
     
